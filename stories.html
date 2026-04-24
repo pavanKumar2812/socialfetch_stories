@@ -3,23 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SocialFetch | Story</title>
-  <meta name="description" content="Read and listen to a full SocialFetch story." />
+  <title>SocialFetch | Stories</title>
+  <meta name="description" content="Browse and listen to curated stories on SocialFetch." />
   <link rel="stylesheet" href="assets/styles.css" />
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body>
+<body data-page="stories">
   <div id="site-header"></div>
 
-  <main class="container section-padding">
-    <section id="post-view" class="fade-in"></section>
+  <main>
+    <!-- Posts Feed -->
+    <section class="section-padding">
+      <div class="container">
+        <div id="feed" class="feed"></div>
+      </div>
+    </section>
   </main>
 
   <div id="site-footer"></div>
 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script type="module" src="assets/post.js"></script>
+  <script type="module" src="assets/home.js"></script>
   <script>
+    // Initialize Lucide icons
     lucide.createIcons();
   </script>
 </body>

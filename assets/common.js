@@ -25,45 +25,84 @@ function formatTimestamp(createdAt) {
   return new Intl.DateTimeFormat("en-US", {
     month: "short",
     day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit"
+    year: "numeric"
   }).format(date);
 }
 
 function getNavHtml(active = "home") {
   const links = [
     { key: "home", href: "index.html", label: "Home" },
+    { key: "stories", href: "stories.html", label: "Stories" },
     { key: "about", href: "about.html", label: "About" },
     { key: "contact", href: "contact.html", label: "Contact" }
   ];
 
   const navLinks = links
     .map((item) => {
-      const cls = item.key === active ? "nav-link is-active" : "nav-link";
+      const cls = item.key === active ? "nav-link active" : "nav-link";
       return `<a class="${cls}" href="${item.href}">${item.label}</a>`;
     })
     .join("");
 
-  return `
-    <header class="site-navbar">
-      <div class="navbar-inner">
-        <a class="logo" href="index.html">Social<b>Fetch</b></a>
-        <nav class="nav-links" aria-label="Main navigation">${navLinks}</nav>
+  const storyFilters = active === "stories"
+    ? `
+      <div class="nav-story-filters categories" id="category-filters">
+        <button class="category-btn active" data-category="All">All</button>
+        <button class="category-btn" data-category="Stories">Stories</button>
+        <button class="category-btn" data-category="Thoughts">Thoughts</button>
+        <button class="category-btn" data-category="News">News</button>
       </div>
-    </header>
+    `
+    : "";
+
+  return `
+    <nav class="navbar ${active === "stories" ? "has-filters" : ""}">
+      <div class="container">
+        <div class="nav-inner">
+          <a class="logo" href="stories.html">Social<span>Fetch</span></a>
+
+          <div class="nav-search-wrapper">
+            <span class="nav-search-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"></circle>
+                <path d="M20 20L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+              </svg>
+            </span>
+            <input type="text" id="search-input" class="nav-search-input" placeholder="Search stories..." />
+          </div>
+          
+          <div class="nav-links">
+            ${navLinks}
+          </div>
+
+          <button class="mobile-menu-btn" id="mobile-toggle" aria-label="Toggle Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+        ${storyFilters}
+      </div>
+    </nav>
+
+    <div class="mobile-drawer" id="mobile-drawer">
+      ${navLinks}
+    </div>
   `;
 }
 
 function getFooterHtml() {
   return `
-    <footer class="site-footer">
-      <div class="footer-inner">
-        <div>© 2026 SocialFetch</div>
-        <div class="footer-links">
-          <a href="terms.html">Terms</a>
-          <a href="privacy.html">Privacy</a>
-          <a href="contact.html">Contact</a>
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-inner">
+          <a class="footer-logo" href="index.html">Social<span>Fetch</span></a>
+          <div class="footer-links">
+            <a class="footer-link" href="terms.html">Terms</a>
+            <a class="footer-link" href="privacy.html">Privacy</a>
+            <a class="footer-link" href="contact.html">Contact</a>
+          </div>
+          <p class="copyright">© 2026 SocialFetch. All rights reserved.</p>
         </div>
       </div>
     </footer>
@@ -73,21 +112,42 @@ function getFooterHtml() {
 function mountChrome(active) {
   window.$("#site-header").html(getNavHtml(active));
   window.$("#site-footer").html(getFooterHtml());
+
+  // Fixed Mobile Toggle Logic
+  const $toggle = window.$("#mobile-toggle");
+  const $drawer = window.$("#mobile-drawer");
+
+  // Toggle open/close and X animation
+  $toggle.on("click", function(e) {
+    e.stopPropagation(); // Prevents click from instantly bubbling up and triggering the document close
+    $drawer.toggleClass("open");
+    $toggle.toggleClass("open");
+  });
+
+  // Close drawer on link click
+  $drawer.on("click", "a", function() {
+    $drawer.removeClass("open");
+    $toggle.removeClass("open");
+  });
+
+  // Close drawer when clicking outside of it
+  window.$(document).on("click", function(e) {
+    if ($drawer.hasClass("open") && !window.$(e.target).closest('#mobile-drawer').length) {
+      $drawer.removeClass("open");
+      $toggle.removeClass("open");
+    }
+  });
 }
 
 function createFeedSkeletonCard() {
   return `
-    <article class="card skeleton" aria-hidden="true">
-      <div class="skel-image"></div>
+    <article class="card skeleton">
+      <div class="card-image-wrap" style="height: 200px;"></div>
       <div class="card-body">
-        <div class="meta-row">
-          <div class="skel-pill"></div>
-          <div class="skel-line sm"></div>
-        </div>
-        <div class="skel-line lg"></div>
-        <div class="skel-line md"></div>
-        <div class="skel-line"></div>
-        <div class="skel-btn"></div>
+        <div style="height: 12px; width: 40%; background: #e2e8f0; margin-bottom: 1rem; border-radius: 4px;"></div>
+        <div style="height: 24px; width: 80%; background: #e2e8f0; margin-bottom: 1rem; border-radius: 4px;"></div>
+        <div style="height: 12px; width: 100%; background: #e2e8f0; margin-bottom: 0.5rem; border-radius: 4px;"></div>
+        <div style="height: 12px; width: 100%; background: #e2e8f0; margin-bottom: 0.5rem; border-radius: 4px;"></div>
       </div>
     </article>
   `;
@@ -98,27 +158,25 @@ function renderFeedSkeletons($target, count = 4) {
   $target.html(skeletons);
 }
 
-function renderState($target, title, body, role = "status") {
+function renderState($target, title, body) {
   $target.html(`
-    <article class="state" role="${role}">
+    <div class="empty-state fade-in">
       <h3>${escapeHtml(title)}</h3>
       <p>${escapeHtml(body)}</p>
-    </article>
+    </div>
   `);
 }
 
 function normalizePost(post = {}, fallbackId = "") {
   const rawContent = typeof post.content === "string" ? post.content.replace(/\s+/g, " ").trim() : "";
-  const normalized = {
+  return {
     id: post.id || fallbackId,
     title: post.title || "Untitled Post",
     content: rawContent || "No content available.",
-    type: post.type || "General",
+    type: post.type || "Story",
     image_url: post.image_url || DEFAULT_IMAGE,
     created_at: post.created_at || null
   };
-
-  return normalized;
 }
 
 export {

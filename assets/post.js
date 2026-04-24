@@ -19,20 +19,11 @@ function getPostIdFromUrl() {
 
 function createPostSkeleton() {
   return `
-    <article class="card skeleton" aria-hidden="true">
-      <div class="skel-image"></div>
-      <div class="card-body">
-        <div class="meta-row">
-          <div class="skel-pill"></div>
-          <div class="skel-line sm"></div>
-        </div>
-        <div class="skel-line lg"></div>
-        <div class="skel-line md"></div>
-        <div class="skel-line"></div>
-        <div class="skel-line"></div>
-        <div class="skel-btn"></div>
-      </div>
-    </article>
+    <div class="skeleton" style="height: 400px; border-radius: 1.5rem; margin-bottom: 2rem;"></div>
+    <div class="skeleton" style="height: 40px; width: 60%; margin: 0 auto 2rem; border-radius: 0.5rem;"></div>
+    <div class="skeleton" style="height: 20px; width: 100%; margin-bottom: 1rem; border-radius: 0.25rem;"></div>
+    <div class="skeleton" style="height: 20px; width: 100%; margin-bottom: 1rem; border-radius: 0.25rem;"></div>
+    <div class="skeleton" style="height: 20px; width: 80%; margin-bottom: 1rem; border-radius: 0.25rem;"></div>
   `;
 }
 
@@ -41,10 +32,10 @@ function renderPost(postRaw) {
 
   const post = normalizePost(postRaw, "post");
   const title = escapeHtml(post.title);
-  const content = escapeHtml(post.content);
   const type = escapeHtml(post.type);
   const timestamp = formatTimestamp(post.created_at);
   const imageUrl = escapeHtml(post.image_url);
+  
   const sentenceSpans = splitIntoSentences(post.content)
     .map((sentence, sentenceIndex) => `<span class="sentence" data-idx="${sentenceIndex}">${escapeHtml(sentence)} </span>`)
     .join("");
@@ -52,23 +43,32 @@ function renderPost(postRaw) {
   audioController.registerItem(post.id, post.content);
 
   $postView.html(`
-    <article class="post-main" data-audio-id="${escapeHtml(post.id)}">
-      <div class="post-hero">
-        <img class="card-image" src="${imageUrl}" alt="${title}" loading="lazy" />
+    <article class="post-detail" data-audio-id="${escapeHtml(post.id)}">
+      <header class="post-header">
+        <div class="post-meta">
+          <span class="badge" style="background: var(--primary-light); color: var(--primary); padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.875rem; font-weight: 600;">${type}</span>
+          <span>${timestamp}</span>
+        </div>
+        <h1 class="post-title">${title}</h1>
+      </header>
+
+      <img class="post-hero-image" src="${imageUrl}" alt="${title}" />
+
+      <div class="post-content speech-content">
+        ${sentenceSpans}
       </div>
-      <div class="meta-row">
-        <span class="badge">${type}</span>
-        <span class="timestamp">${timestamp}</span>
-      </div>
-      <h1 class="post-title">${title}</h1>
-      <p class="post-reading speech-content" aria-live="polite">${sentenceSpans || content}</p>
-      <div class="actions post-actions">
-        <button class="control-btn play-btn" type="button" aria-label="Play audio for ${title}">▶ Play</button>
-        <button class="control-btn pause-btn" type="button" aria-label="Pause audio for ${title}" disabled>⏸ Pause</button>
-        <button class="control-btn stop-btn" type="button" aria-label="Stop audio for ${title}" disabled>⏹ Stop</button>
+
+      <div class="post-audio-sticky">
+        <button class="audio-btn play-btn" type="button" title="Play"><i data-lucide="play" size="24"></i></button>
+        <button class="audio-btn pause-btn" type="button" title="Pause" disabled><i data-lucide="pause" size="24"></i></button>
+        <button class="audio-btn stop-btn" type="button" title="Stop" disabled><i data-lucide="square" size="24"></i></button>
       </div>
     </article>
   `);
+
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
 
   if (!audioController.supportsSpeech) {
     audioController.setUnavailableUI($postView.find("[data-audio-id]").first());
@@ -78,7 +78,7 @@ function renderPost(postRaw) {
 async function loadPost() {
   const postId = getPostIdFromUrl();
   if (!postId) {
-    renderState($postView, "Post not found", "Missing post id in URL. Please return to Home and open a story again.", "alert");
+    renderState($postView, "Post not found", "Please return to Home and try again.");
     return;
   }
 
@@ -89,14 +89,14 @@ async function loadPost() {
     const postSnap = await getDoc(postRef);
 
     if (!postSnap.exists()) {
-      renderState($postView, "Post not found", "This story does not exist or may have been removed.", "status");
+      renderState($postView, "Post not found", "This story may have been removed.");
       return;
     }
 
     renderPost({ id: postSnap.id, ...postSnap.data() });
   } catch (error) {
     console.error("Failed to fetch post", error);
-    renderState($postView, "Unable to load post", "Please check your Firebase config and Firestore rules, then refresh.", "alert");
+    renderState($postView, "Unable to load post", "Please check your connection and try again.");
   }
 }
 

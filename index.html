@@ -3,22 +3,77 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SocialFetch | Home</title>
-  <meta name="description" content="SocialFetch is a modern content feed with built-in audio reading." />
+  <title>SocialFetch | Discover Stories, Thoughts & Ideas</title>
+  <meta name="description" content="SocialFetch is a modern content feed with built-in audio reading. Discover fresh stories and listen on the go." />
   <link rel="stylesheet" href="assets/styles.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    if (window.location.pathname === "/" || window.location.pathname === "/index.html") {
+      if (window.location.pathname.endsWith("/")) {
+        window.location.replace("stories.html");
+      }
+    }
+  </script>
 </head>
 <body data-page="home">
   <div id="site-header"></div>
 
-  <main class="page-shell">
-    <h1 class="page-title">Latest Stories</h1>
-    <p class="page-subtitle">Discover fresh content and listen with sentence-by-sentence audio playback.</p>
-    <section id="feed" class="feed" aria-live="polite"></section>
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-text fade-in">
+          <h1 class="hero-title">Discover Stories, Thoughts & Ideas</h1>
+          <p class="hero-subtitle">Experience content in a new way. Read or listen to curated stories from around the world.</p>
+          <a href="stories.html" class="cta-button">Explore Stories <i data-lucide="arrow-right"></i></a>
+        </div>
+        
+        <div class="hero-visual fade-in">
+  <div class="visual-card">
+    <img src="./assets/images/coding.jpg" alt="Tech">
+  </div>
+  <div class="visual-card">
+    <img src="./assets/images/bulb.avif" alt="Ideas">
+  </div>
+  <div class="visual-card">
+    <img src="./assets/images/news.jpg" alt="News">
+  </div>
+  <div class="visual-card">
+    <img src="./assets/images/stories.jpg" alt="Data">
+  </div>
+</div>
+      </div>
+    </section>
+
+    <section class="section-padding" style="background: white;">
+      <div class="container">
+        <h2 style="text-align: center; margin-bottom: 3rem;">How It Works</h2>
+        <div class="how-it-works-grid">
+          <div class="step-card fade-in" style="animation-delay: 0.1s;">
+            <div class="step-icon"><i data-lucide="search"></i></div>
+            <h3 class="step-title">Discover content</h3>
+            <p class="step-desc">Browse through a curated feed of stories, thoughts, and the latest news.</p>
+          </div>
+          <div class="step-card fade-in" style="animation-delay: 0.2s;">
+            <div class="step-icon"><i data-lucide="headphones"></i></div>
+            <h3 class="step-title">Listen with audio</h3>
+            <p class="step-desc">Can't read right now? Use our premium audio feature to listen to any post.</p>
+          </div>
+          <div class="step-card fade-in" style="animation-delay: 0.3s;">
+            <div class="step-icon"><i data-lucide="sparkles"></i></div>
+            <h3 class="step-title">Learn & enjoy</h3>
+            <p class="step-desc">Stay informed and entertained with a seamless mobile-first experience.</p>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <div id="site-footer"></div>
 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script type="module" src="assets/home.js"></script>
+  <script type="module" src="assets/static-page.js"></script>
+  <script>
+    lucide.createIcons();
+  </script>
 </body>
 </html>
