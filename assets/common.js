@@ -75,6 +75,10 @@ function getNavHtml(active = "home") {
             ${navLinks}
           </div>
 
+          <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle Dark Mode">
+            <i data-lucide="moon"></i>
+          </button>
+
           <button class="mobile-menu-btn" id="mobile-toggle" aria-label="Toggle Menu">
             <span></span>
             <span></span>
@@ -113,6 +117,31 @@ function mountChrome(active) {
   window.$("#site-header").html(getNavHtml(active));
   window.$("#site-footer").html(getFooterHtml());
 
+  // Theme Toggle Logic
+  const savedTheme = localStorage.getItem("theme");
+  const systemPrefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  let currentTheme = savedTheme || (systemPrefersDark ? "dark" : "light");
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    const iconName = theme === "dark" ? "sun" : "moon";
+    const $themeToggle = window.$("#theme-toggle");
+    if ($themeToggle.length) {
+      $themeToggle.html(`<i data-lucide="${iconName}"></i>`);
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+    }
+  }
+
+  applyTheme(currentTheme);
+
+  window.$("#theme-toggle").on("click", function() {
+    currentTheme = currentTheme === "dark" ? "light" : "dark";
+    localStorage.setItem("theme", currentTheme);
+    applyTheme(currentTheme);
+  });
+
   // Fixed Mobile Toggle Logic
   const $toggle = window.$("#mobile-toggle");
   const $drawer = window.$("#mobile-drawer");
@@ -144,10 +173,10 @@ function createFeedSkeletonCard() {
     <article class="card skeleton">
       <div class="card-image-wrap" style="height: 200px;"></div>
       <div class="card-body">
-        <div style="height: 12px; width: 40%; background: #e2e8f0; margin-bottom: 1rem; border-radius: 4px;"></div>
-        <div style="height: 24px; width: 80%; background: #e2e8f0; margin-bottom: 1rem; border-radius: 4px;"></div>
-        <div style="height: 12px; width: 100%; background: #e2e8f0; margin-bottom: 0.5rem; border-radius: 4px;"></div>
-        <div style="height: 12px; width: 100%; background: #e2e8f0; margin-bottom: 0.5rem; border-radius: 4px;"></div>
+        <div style="height: 12px; width: 40%; background: var(--border); margin-bottom: 1rem; border-radius: 4px;"></div>
+        <div style="height: 24px; width: 80%; background: var(--border); margin-bottom: 1rem; border-radius: 4px;"></div>
+        <div style="height: 12px; width: 100%; background: var(--border); margin-bottom: 0.5rem; border-radius: 4px;"></div>
+        <div style="height: 12px; width: 100%; background: var(--border); margin-bottom: 0.5rem; border-radius: 4px;"></div>
       </div>
     </article>
   `;

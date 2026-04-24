@@ -33,6 +33,23 @@
   --header-height: 84px;
 }
 
+[data-theme="dark"] {
+  --primary: #3b82f6;
+  --primary-dark: #60a5fa;
+  --primary-light: #1e3a8a;
+  --secondary: #e2e8f0;
+  --accent: #38bdf8;
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --text: #f8fafc;
+  --text-muted: #94a3b8;
+  --border: #334155;
+
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 10px 30px -10px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -96,10 +113,10 @@ button {
   min-height: 72px;
   margin: 0;
   border-radius: 0;
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--surface);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+  border-bottom: 1px solid var(--border);
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
   position: sticky;
   top: 0;
@@ -274,6 +291,30 @@ button {
   }
 }
 
+/* Theme Toggle Button */
+.theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: var(--secondary);
+  background: transparent;
+  transition: background 0.2s, color 0.2s;
+  cursor: pointer;
+  z-index: 110;
+}
+
+.theme-toggle-btn:hover {
+  background: var(--border);
+}
+
+.theme-toggle-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
 /* Mobile Menu */
 .mobile-menu-btn {
   display: flex;
@@ -314,7 +355,7 @@ button {
   right: -100%;
   width: 80%;
   height: 100vh;
-  background: rgba(255,255,255,0.95);
+  background: var(--surface);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   z-index: 105;
@@ -1076,7 +1117,7 @@ body[data-page="stories"] .card:nth-child(4n + 1) .card-excerpt {
 
 /* Skeleton Shimmer */
 .skeleton {
-  background: #f1f5f9;
+  background: var(--surface);
   position: relative;
   overflow: hidden;
   border-color: transparent;
